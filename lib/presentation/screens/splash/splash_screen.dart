@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/colors.dart';
 import '../../../core/theme/text_styles.dart';
+import '../home/home_screen.dart';
 
 /// Splash screen shown when app launches
 class SplashScreen extends StatefulWidget {
@@ -19,15 +20,21 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initializeApp() async {
-    // TODO: Initialize database
+    // Initialize database
+    // TODO: Add database initialization here
+    // await AppDatabase().database;
+
     // TODO: Check if first time user
     // TODO: Check if PIN is enabled
-    // TODO: Navigate to appropriate screen
 
     await Future.delayed(const Duration(seconds: 2));
 
-    // For now, just show splash screen
-    // In future, navigate to onboarding, PIN verify, or home
+    if (mounted) {
+      // Navigate to home screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    }
   }
 
   @override
