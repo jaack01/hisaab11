@@ -4,14 +4,22 @@ import '../../data/datasources/local/database/dao/transaction_dao.dart';
 import '../../data/datasources/local/database/dao/item_dao.dart';
 import '../../data/datasources/local/database/dao/invoice_dao.dart';
 import '../../data/datasources/local/database/dao/invoice_item_dao.dart';
+import '../../data/datasources/local/database/dao/reminder_dao.dart';
+import '../../data/datasources/local/database/dao/expense_dao.dart';
 import '../../data/repositories/customer_repository_impl.dart';
 import '../../data/repositories/transaction_repository_impl.dart';
 import '../../data/repositories/item_repository_impl.dart';
 import '../../data/repositories/invoice_repository_impl.dart';
+import '../../data/repositories/reminder_repository_impl.dart';
+import '../../data/repositories/expense_repository_impl.dart';
+import '../../data/repositories/report_repository_impl.dart';
 import '../../domain/repositories/customer_repository.dart';
 import '../../domain/repositories/transaction_repository.dart';
 import '../../domain/repositories/item_repository.dart';
 import '../../domain/repositories/invoice_repository.dart';
+import '../../domain/repositories/reminder_repository.dart';
+import '../../domain/repositories/expense_repository.dart';
+import '../../domain/repositories/report_repository.dart';
 import '../../domain/usecases/customer/add_customer.dart';
 import '../../domain/usecases/customer/delete_customer.dart';
 import '../../domain/usecases/customer/get_customer_by_id.dart';
@@ -36,6 +44,16 @@ import '../../domain/usecases/invoice/get_invoice_items.dart';
 import '../../domain/usecases/invoice/get_invoices_by_customer.dart';
 import '../../domain/usecases/invoice/update_invoice_payment.dart';
 import '../../domain/usecases/invoice/get_next_invoice_number.dart';
+import '../../domain/usecases/reminder/create_reminder.dart';
+import '../../domain/usecases/reminder/get_reminders.dart';
+import '../../domain/usecases/reminder/get_pending_reminders.dart';
+import '../../domain/usecases/reminder/mark_reminder_sent.dart';
+import '../../domain/usecases/expense/add_expense.dart';
+import '../../domain/usecases/expense/get_expenses.dart';
+import '../../domain/usecases/expense/get_expenses_by_category.dart';
+import '../../domain/usecases/expense/get_total_expenses.dart';
+import '../../domain/usecases/report/generate_business_report.dart';
+import '../../domain/usecases/report/get_dashboard_summary.dart';
 
 // ============================================================================
 // DATA SOURCES (DAOs)
@@ -61,6 +79,14 @@ final invoiceItemDaoProvider = Provider<InvoiceItemDao>((ref) {
   return InvoiceItemDao();
 });
 
+final reminderDaoProvider = Provider<ReminderDao>((ref) {
+  return ReminderDao();
+});
+
+final expenseDaoProvider = Provider<ExpenseDao>((ref) {
+  return ExpenseDao();
+});
+
 // ============================================================================
 // REPOSITORIES
 // ============================================================================
@@ -84,6 +110,33 @@ final invoiceRepositoryProvider = Provider<InvoiceRepository>((ref) {
   final invoiceDao = ref.read(invoiceDaoProvider);
   final invoiceItemDao = ref.read(invoiceItemDaoProvider);
   return InvoiceRepositoryImpl(invoiceDao, invoiceItemDao);
+});
+
+final reminderRepositoryProvider = Provider<ReminderRepository>((ref) {
+  final dao = ref.read(reminderDaoProvider);
+  return ReminderRepositoryImpl(dao);
+});
+
+final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
+  final dao = ref.read(expenseDaoProvider);
+  return ExpenseRepositoryImpl(dao);
+});
+
+final reportRepositoryProvider = Provider<ReportRepository>((ref) {
+  final customerDao = ref.read(customerDaoProvider);
+  final transactionDao = ref.read(transactionDaoProvider);
+  final invoiceDao = ref.read(invoiceDaoProvider);
+  final invoiceItemDao = ref.read(invoiceItemDaoProvider);
+  final itemDao = ref.read(itemDaoProvider);
+  final expenseDao = ref.read(expenseDaoProvider);
+  return ReportRepositoryImpl(
+    customerDao: customerDao,
+    transactionDao: transactionDao,
+    invoiceDao: invoiceDao,
+    invoiceItemDao: invoiceItemDao,
+    itemDao: itemDao,
+    expenseDao: expenseDao,
+  );
 });
 
 // ============================================================================
@@ -220,4 +273,66 @@ final updateInvoicePaymentUseCaseProvider = Provider<UpdateInvoicePayment>((ref)
 final getNextInvoiceNumberUseCaseProvider = Provider<GetNextInvoiceNumber>((ref) {
   final repository = ref.read(invoiceRepositoryProvider);
   return GetNextInvoiceNumber(repository);
+});
+
+// ============================================================================
+// USE CASES - REMINDER
+// ============================================================================
+
+final createReminderUseCaseProvider = Provider<CreateReminder>((ref) {
+  final repository = ref.read(reminderRepositoryProvider);
+  return CreateReminder(repository);
+});
+
+final getRemindersUseCaseProvider = Provider<GetReminders>((ref) {
+  final repository = ref.read(reminderRepositoryProvider);
+  return GetReminders(repository);
+});
+
+final getPendingRemindersUseCaseProvider = Provider<GetPendingReminders>((ref) {
+  final repository = ref.read(reminderRepositoryProvider);
+  return GetPendingReminders(repository);
+});
+
+final markReminderSentUseCaseProvider = Provider<MarkReminderSent>((ref) {
+  final repository = ref.read(reminderRepositoryProvider);
+  return MarkReminderSent(repository);
+});
+
+// ============================================================================
+// USE CASES - EXPENSE
+// ============================================================================
+
+final addExpenseUseCaseProvider = Provider<AddExpense>((ref) {
+  final repository = ref.read(expenseRepositoryProvider);
+  return AddExpense(repository);
+});
+
+final getExpensesUseCaseProvider = Provider<GetExpenses>((ref) {
+  final repository = ref.read(expenseRepositoryProvider);
+  return GetExpenses(repository);
+});
+
+final getExpensesByCategoryUseCaseProvider = Provider<GetExpensesByCategory>((ref) {
+  final repository = ref.read(expenseRepositoryProvider);
+  return GetExpensesByCategory(repository);
+});
+
+final getTotalExpensesUseCaseProvider = Provider<GetTotalExpenses>((ref) {
+  final repository = ref.read(expenseRepositoryProvider);
+  return GetTotalExpenses(repository);
+});
+
+// ============================================================================
+// USE CASES - REPORT
+// ============================================================================
+
+final generateBusinessReportUseCaseProvider = Provider<GenerateBusinessReport>((ref) {
+  final repository = ref.read(reportRepositoryProvider);
+  return GenerateBusinessReport(repository);
+});
+
+final getDashboardSummaryUseCaseProvider = Provider<GetDashboardSummary>((ref) {
+  final repository = ref.read(reportRepositoryProvider);
+  return GetDashboardSummary(repository);
 });
