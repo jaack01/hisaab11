@@ -54,6 +54,12 @@ import '../../domain/usecases/expense/get_expenses_by_category.dart';
 import '../../domain/usecases/expense/get_total_expenses.dart';
 import '../../domain/usecases/report/generate_business_report.dart';
 import '../../domain/usecases/report/get_dashboard_summary.dart';
+import '../../domain/usecases/reports/generate_ledger_report.dart';
+import '../../domain/usecases/reports/generate_daybook_report.dart';
+import '../../domain/usecases/reports/generate_profit_loss_report.dart';
+import '../../domain/usecases/reports/generate_balance_sheet.dart';
+import '../../domain/repositories/reports_repository.dart';
+import '../../data/repositories/reports_repository_impl.dart';
 
 // ============================================================================
 // DATA SOURCES (DAOs)
@@ -136,6 +142,21 @@ final reportRepositoryProvider = Provider<ReportRepository>((ref) {
     invoiceItemDao: invoiceItemDao,
     itemDao: itemDao,
     expenseDao: expenseDao,
+  );
+});
+
+final reportsRepositoryProvider = Provider<ReportsRepository>((ref) {
+  final customerDao = ref.read(customerDaoProvider);
+  final transactionDao = ref.read(transactionDaoProvider);
+  final invoiceDao = ref.read(invoiceDaoProvider);
+  final expenseDao = ref.read(expenseDaoProvider);
+  final itemDao = ref.read(itemDaoProvider);
+  return ReportsRepositoryImpl(
+    customerDao: customerDao,
+    transactionDao: transactionDao,
+    invoiceDao: invoiceDao,
+    expenseDao: expenseDao,
+    itemDao: itemDao,
   );
 });
 
@@ -335,4 +356,28 @@ final generateBusinessReportUseCaseProvider = Provider<GenerateBusinessReport>((
 final getDashboardSummaryUseCaseProvider = Provider<GetDashboardSummary>((ref) {
   final repository = ref.read(reportRepositoryProvider);
   return GetDashboardSummary(repository);
+});
+
+// ============================================================================
+// USE CASES - REPORTS (Phase 3)
+// ============================================================================
+
+final generateLedgerReportUseCaseProvider = Provider<GenerateLedgerReport>((ref) {
+  final repository = ref.read(reportsRepositoryProvider);
+  return GenerateLedgerReport(repository);
+});
+
+final generateDaybookReportUseCaseProvider = Provider<GenerateDaybookReport>((ref) {
+  final repository = ref.read(reportsRepositoryProvider);
+  return GenerateDaybookReport(repository);
+});
+
+final generateProfitLossReportUseCaseProvider = Provider<GenerateProfitLossReport>((ref) {
+  final repository = ref.read(reportsRepositoryProvider);
+  return GenerateProfitLossReport(repository);
+});
+
+final generateBalanceSheetUseCaseProvider = Provider<GenerateBalanceSheet>((ref) {
+  final repository = ref.read(reportsRepositoryProvider);
+  return GenerateBalanceSheet(repository);
 });

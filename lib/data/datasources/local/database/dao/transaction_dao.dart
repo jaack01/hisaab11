@@ -168,4 +168,121 @@ class TransactionDao extends BaseDao<TransactionModel> {
       );
     }
   }
+
+  /// Get transactions by date range for a specific customer
+  Future<List<TransactionModel>> getTransactionsByDateRange({
+    required int customerId,
+    required int startDate,
+    required int endDate,
+  }) async {
+    try {
+      final db = await database;
+      final maps = await db.query(
+        tableName,
+        where: '''
+          ${DbConstants.colTransactionCustomerId} = ? AND
+          ${DbConstants.colTransactionIsDeleted} = 0 AND
+          ${DbConstants.colTransactionDate} BETWEEN ? AND ?
+        ''',
+        whereArgs: [customerId, startDate, endDate],
+        orderBy: '${DbConstants.colTransactionDate} ASC',
+      );
+
+      return maps.map((map) => fromMap(map)).toList();
+    } catch (e) {
+      throw DatabaseException(
+        message: 'Failed to get transactions by date range for customer',
+        originalException: e,
+      );
+    }
+  }
+
+  /// Get transactions before a specific date for a customer
+  Future<List<TransactionModel>> getTransactionsBeforeDate({
+    required int customerId,
+    required int beforeDate,
+  }) async {
+    try {
+      final db = await database;
+      final maps = await db.query(
+        tableName,
+        where: '''
+          ${DbConstants.colTransactionCustomerId} = ? AND
+          ${DbConstants.colTransactionIsDeleted} = 0 AND
+          ${DbConstants.colTransactionDate} < ?
+        ''',
+        whereArgs: [customerId, beforeDate],
+        orderBy: '${DbConstants.colTransactionDate} ASC',
+      );
+
+      return maps.map((map) => fromMap(map)).toList();
+    } catch (e) {
+      throw DatabaseException(
+        message: 'Failed to get transactions before date',
+        originalException: e,
+      );
+    }
+  }
+
+  /// Get transactions by business and date range for daybook
+  Future<List<TransactionModel>> getTransactionsByBusinessAndDateRange({
+    required int businessId,
+    required int startDate,
+    required int endDate,
+  }) async {
+    try {
+      final db = await database;
+      final maps = await db.query(
+        tableName,
+        where: '''
+          ${DbConstants.colTransactionBusinessId} = ? AND
+          ${DbConstants.colTransactionIsDeleted} = 0 AND
+          ${DbConstants.colTransactionDate} BETWEEN ? AND ?
+        ''',
+        whereArgs: [businessId, startDate, endDate],
+        orderBy: '${DbConstants.colTransactionDate} ASC, ${DbConstants.colTransactionCreatedAt} ASC',
+      );
+
+      return maps.map((map) => fromMap(map)).toList();
+    } catch (e) {
+      throw DatabaseException(
+        message: 'Failed to get transactions for daybook',
+        originalException: e,
+      );
+    }
+  }
+
+  /// Get top customers by transaction value
+  Future<List<Map<String, dynamic>>> getTopCustomers({
+    required int businessId,
+    int limit = 10,
+  }) async {
+    try {
+      final db = await database;
+      return await db.rawQuery('''
+        SELECT
+          t.${DbConstants.colTransactionCustomerId} as customer_id,
+          c.${DbConstants.colCustomerName} as customer_name,
+          SUM(CASE
+            WHEN t.${DbConstants.colTransactionType} = 'DEBIT'
+            THEN t.${DbConstants.colTransactionAmount}
+            ELSE 0
+          END) as total_amount,
+          COUNT(t.${DbConstants.colTransactionId}) as transaction_count
+        FROM $tableName t
+        INNER JOIN ${DbConstants.tableCustomers} c
+          ON t.${DbConstants.colTransactionCustomerId} = c.${DbConstants.colCustomerId}
+        WHERE t.${DbConstants.colTransactionBusinessId} = ?
+          AND t.${DbConstants.colTransactionIsDeleted} = 0
+        GROUP BY t.${DbConstants.colTransactionCustomerId}, c.${DbConstants.colCustomerName}
+        ORDER BY total_amount DESC
+        LIMIT ?
+      ''', [businessId, limit]);
+    } catch (e) {
+      throw DatabaseException(
+        message: 'Failed to get top customers',
+        originalException: e,
+      );
+    }
+  }
 }
