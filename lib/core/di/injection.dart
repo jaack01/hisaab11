@@ -60,6 +60,16 @@ import '../../domain/usecases/reports/generate_profit_loss_report.dart';
 import '../../domain/usecases/reports/generate_balance_sheet.dart';
 import '../../domain/repositories/reports_repository.dart';
 import '../../data/repositories/reports_repository_impl.dart';
+import '../../domain/usecases/settings/get_settings.dart';
+import '../../domain/usecases/settings/update_settings.dart';
+import '../../domain/usecases/settings/create_backup.dart';
+import '../../domain/usecases/settings/restore_backup.dart';
+import '../../domain/usecases/settings/get_available_backups.dart';
+import '../../domain/usecases/settings/export_data.dart';
+import '../../domain/usecases/settings/get_business_profile.dart';
+import '../../domain/usecases/settings/update_business_profile.dart';
+import '../../domain/repositories/settings_repository.dart';
+import '../../data/repositories/settings_repository_impl.dart';
 
 // ============================================================================
 // DATA SOURCES (DAOs)
@@ -380,4 +390,52 @@ final generateProfitLossReportUseCaseProvider = Provider<GenerateProfitLossRepor
 final generateBalanceSheetUseCaseProvider = Provider<GenerateBalanceSheet>((ref) {
   final repository = ref.read(reportsRepositoryProvider);
   return GenerateBalanceSheet(repository);
+});
+
+// ============================================================================
+// USE CASES - SETTINGS (Phase 6)
+// ============================================================================
+
+final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
+  return SettingsRepositoryImpl();
+});
+
+final getSettingsUseCaseProvider = Provider<GetSettings>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return GetSettings(repository);
+});
+
+final updateSettingsUseCaseProvider = Provider<UpdateSettings>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return UpdateSettings(repository);
+});
+
+final createBackupUseCaseProvider = Provider<CreateBackup>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return CreateBackup(repository);
+});
+
+final restoreBackupUseCaseProvider = Provider<RestoreBackup>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return RestoreBackup(repository);
+});
+
+final getAvailableBackupsUseCaseProvider = Provider<GetAvailableBackups>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return GetAvailableBackups(repository);
+});
+
+final exportDataUseCaseProvider = Provider<ExportData>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return ExportData(repository);
+});
+
+final getBusinessProfileUseCaseProvider = Provider<GetBusinessProfile>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return GetBusinessProfile(repository);
+});
+
+final updateBusinessProfileUseCaseProvider = Provider<UpdateBusinessProfile>((ref) {
+  final repository = ref.read(settingsRepositoryProvider);
+  return UpdateBusinessProfile(repository);
 });
