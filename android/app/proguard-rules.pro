@@ -1,4 +1,6 @@
-# Flutter wrapper
+# Hisaab - ProGuard Rules for Release Build
+
+## Flutter wrapper
 -keep class io.flutter.app.** { *; }
 -keep class io.flutter.plugin.**  { *; }
 -keep class io.flutter.util.**  { *; }
@@ -6,28 +8,63 @@
 -keep class io.flutter.**  { *; }
 -keep class io.flutter.plugins.**  { *; }
 
-# SQLite
+## Dart
+-keep class io.flutter.embedding.** { *; }
+-dontwarn io.flutter.embedding.**
+
+## SQLite
 -keep class org.sqlite.** { *; }
 -keep class org.sqlite.database.** { *; }
 
-# Gson (if used for JSON parsing)
--keepattributes Signature
+## PDF Generation
+-keep class com.lowagie.text.** { *; }
+-dontwarn com.lowagie.text.**
+
+## Riverpod (State Management)
+-keep class * extends com.google.common.base.Function { *; }
+-dontwarn com.google.common.base.**
+
+## Shared Preferences
+-keep class androidx.preference.** { *; }
+
+## Path Provider
+-keep class io.flutter.plugins.pathprovider.** { *; }
+
+## JSON Serialization
 -keepattributes *Annotation*
--dontwarn sun.misc.**
--keep class com.google.gson.** { *; }
--keep class * implements com.google.gson.TypeAdapter
--keep class * implements com.google.gson.TypeAdapterFactory
--keep class * implements com.google.gson.JsonSerializer
--keep class * implements com.google.gson.JsonDeserializer
+-keepattributes Signature
+-keepattributes InnerClasses
+-keepattributes EnclosingMethod
 
-# Keep model classes
--keep class com.hisaab.khatabook.data.models.** { *; }
--keep class com.hisaab.khatabook.domain.entities.** { *; }
+## Keep entity classes for serialization
+-keep class com.example.hisaab11.domain.entities.** { *; }
 
-# Encryption
--keep class javax.crypto.** { *; }
--keep class javax.crypto.spec.** { *; }
+## Remove logging in production
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}
 
-# Prevent obfuscation of Riverpod generated code
--keep class **$Providers { *; }
--keep class **$Provider { *; }
+## General Android
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+
+## Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+## Optimization
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-verbose
+
+## Additional rules for release
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
