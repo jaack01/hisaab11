@@ -70,6 +70,11 @@ import '../../domain/usecases/settings/get_business_profile.dart';
 import '../../domain/usecases/settings/update_business_profile.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../data/repositories/settings_repository_impl.dart';
+import '../../domain/usecases/onboarding/get_onboarding_state.dart';
+import '../../domain/usecases/onboarding/complete_onboarding.dart';
+import '../../domain/usecases/onboarding/complete_setup.dart';
+import '../../domain/repositories/onboarding_repository.dart';
+import '../../data/repositories/onboarding_repository_impl.dart';
 
 // ============================================================================
 // DATA SOURCES (DAOs)
@@ -438,4 +443,27 @@ final getBusinessProfileUseCaseProvider = Provider<GetBusinessProfile>((ref) {
 final updateBusinessProfileUseCaseProvider = Provider<UpdateBusinessProfile>((ref) {
   final repository = ref.read(settingsRepositoryProvider);
   return UpdateBusinessProfile(repository);
+});
+
+// ============================================================================
+// USE CASES - ONBOARDING (Phase 7)
+// ============================================================================
+
+final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
+  return OnboardingRepositoryImpl();
+});
+
+final getOnboardingStateUseCaseProvider = Provider<GetOnboardingState>((ref) {
+  final repository = ref.read(onboardingRepositoryProvider);
+  return GetOnboardingState(repository);
+});
+
+final completeOnboardingUseCaseProvider = Provider<CompleteOnboarding>((ref) {
+  final repository = ref.read(onboardingRepositoryProvider);
+  return CompleteOnboarding(repository);
+});
+
+final completeSetupUseCaseProvider = Provider<CompleteSetup>((ref) {
+  final repository = ref.read(onboardingRepositoryProvider);
+  return CompleteSetup(repository);
 });
