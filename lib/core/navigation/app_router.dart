@@ -1,12 +1,52 @@
 import 'package:flutter/material.dart';
 
+// Splash & Home
 import '../../presentation/screens/splash/splash_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
+
+// Customers
 import '../../presentation/screens/customers/customer_list_screen.dart';
 import '../../presentation/screens/customers/customer_detail_screen.dart';
 import '../../presentation/screens/customers/add_customer_screen.dart';
+import '../../presentation/screens/customers/edit_customer_screen.dart';
+
+// Transactions
 import '../../presentation/screens/transactions/add_transaction_screen.dart';
-// Import other screens as they are created
+import '../../presentation/screens/transactions/transaction_list_screen.dart';
+import '../../presentation/screens/transactions/edit_transaction_screen.dart';
+
+// Invoices
+import '../../presentation/screens/invoices/invoice_list_screen.dart';
+import '../../presentation/screens/invoices/create_invoice_screen.dart';
+import '../../presentation/screens/invoices/invoice_detail_screen.dart';
+
+// Items
+import '../../presentation/screens/items/item_list_screen.dart';
+import '../../presentation/screens/items/add_item_screen.dart';
+import '../../presentation/screens/items/edit_item_screen.dart';
+
+// Reports
+import '../../presentation/screens/reports/reports_dashboard_screen.dart';
+import '../../presentation/screens/reports/ledger_report_screen.dart';
+import '../../presentation/screens/reports/daybook_report_screen.dart';
+import '../../presentation/screens/reports/profit_loss_report_screen.dart';
+import '../../presentation/screens/reports/balance_sheet_report_screen.dart';
+
+// Expenses
+import '../../presentation/screens/expenses/expense_list_screen.dart';
+import '../../presentation/screens/expenses/add_expense_screen.dart';
+import '../../presentation/screens/expenses/edit_expense_screen.dart';
+
+// Reminders
+import '../../presentation/screens/reminders/reminder_list_screen.dart';
+import '../../presentation/screens/reminders/add_reminder_screen.dart';
+import '../../presentation/screens/reminders/edit_reminder_screen.dart';
+
+// Settings
+import '../../presentation/screens/settings/settings_screen.dart';
+import '../../presentation/screens/settings/backup_restore_screen.dart';
+import '../../presentation/screens/settings/business_profile_screen.dart';
+
 import 'app_routes.dart';
 
 /// App router configuration
@@ -36,12 +76,12 @@ class AppRouter {
 
       case Routes.customerDetail:
         final args = settings.arguments as Map<String, dynamic>?;
-        final customerId = args?['customerId'] as int?;
-        if (customerId == null) {
-          return _errorRoute('Customer ID is required');
+        final customer = args?['customer'];
+        if (customer == null) {
+          return _errorRoute('Customer is required');
         }
         return MaterialPageRoute(
-          builder: (_) => CustomerDetailScreen(customerId: customerId),
+          builder: (_) => CustomerDetailScreen(customer: customer),
           settings: settings,
         );
 
@@ -65,9 +105,13 @@ class AppRouter {
       // Transactions
       case Routes.addTransaction:
         final args = settings.arguments as Map<String, dynamic>?;
-        final customerId = args?['customerId'] as int?;
+        final customer = args?['customer'];
+        final initialType = args?['initialType'] as String?;
         return MaterialPageRoute(
-          builder: (_) => AddTransactionScreen(customerId: customerId),
+          builder: (_) => AddTransactionScreen(
+            customer: customer,
+            initialType: initialType,
+          ),
           settings: settings,
         );
 
@@ -123,7 +167,7 @@ class AppRouter {
           return _errorRoute('Invoice ID is required');
         }
         return MaterialPageRoute(
-          builder: (_) => EditInvoiceScreen(invoiceId: invoiceId),
+          builder: (_) => _PlaceholderScreen(title: 'Edit Invoice'),
           settings: settings,
         );
 
@@ -249,7 +293,7 @@ class AppRouter {
 
       case Routes.exportData:
         return MaterialPageRoute(
-          builder: (_) => const ExportDataScreen(),
+          builder: (_) => _PlaceholderScreen(title: 'Export Data'),
           settings: settings,
         );
 
@@ -261,20 +305,20 @@ class AppRouter {
 
       case Routes.about:
         return MaterialPageRoute(
-          builder: (_) => const AboutScreen(),
+          builder: (_) => _PlaceholderScreen(title: 'About'),
           settings: settings,
         );
 
       // Onboarding
       case Routes.onboarding:
         return MaterialPageRoute(
-          builder: (_) => const OnboardingScreen(),
+          builder: (_) => _PlaceholderScreen(title: 'Onboarding'),
           settings: settings,
         );
 
       case Routes.setupWizard:
         return MaterialPageRoute(
-          builder: (_) => const SetupWizardScreen(),
+          builder: (_) => _PlaceholderScreen(title: 'Setup'),
           settings: settings,
         );
 
@@ -302,188 +346,7 @@ class AppRouter {
   }
 }
 
-// Placeholder screens (to be implemented)
-
-class EditCustomerScreen extends StatelessWidget {
-  final int customerId;
-  const EditCustomerScreen({super.key, required this.customerId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Edit Customer');
-}
-
-class TransactionListScreen extends StatelessWidget {
-  final int? customerId;
-  const TransactionListScreen({super.key, this.customerId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Transactions');
-}
-
-class EditTransactionScreen extends StatelessWidget {
-  final int transactionId;
-  const EditTransactionScreen({super.key, required this.transactionId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Edit Transaction');
-}
-
-class InvoiceListScreen extends StatelessWidget {
-  const InvoiceListScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Invoices');
-}
-
-class CreateInvoiceScreen extends StatelessWidget {
-  final int? customerId;
-  const CreateInvoiceScreen({super.key, this.customerId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Create Invoice');
-}
-
-class InvoiceDetailScreen extends StatelessWidget {
-  final int invoiceId;
-  const InvoiceDetailScreen({super.key, required this.invoiceId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Invoice Detail');
-}
-
-class EditInvoiceScreen extends StatelessWidget {
-  final int invoiceId;
-  const EditInvoiceScreen({super.key, required this.invoiceId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Edit Invoice');
-}
-
-class ItemListScreen extends StatelessWidget {
-  const ItemListScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Items');
-}
-
-class AddItemScreen extends StatelessWidget {
-  const AddItemScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Add Item');
-}
-
-class EditItemScreen extends StatelessWidget {
-  final int itemId;
-  const EditItemScreen({super.key, required this.itemId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Edit Item');
-}
-
-class ReportsDashboardScreen extends StatelessWidget {
-  const ReportsDashboardScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Reports');
-}
-
-class LedgerReportScreen extends StatelessWidget {
-  final int? customerId;
-  const LedgerReportScreen({super.key, this.customerId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Ledger Report');
-}
-
-class DaybookReportScreen extends StatelessWidget {
-  const DaybookReportScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Daybook Report');
-}
-
-class ProfitLossReportScreen extends StatelessWidget {
-  const ProfitLossReportScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Profit & Loss');
-}
-
-class BalanceSheetReportScreen extends StatelessWidget {
-  const BalanceSheetReportScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Balance Sheet');
-}
-
-class ExpenseListScreen extends StatelessWidget {
-  const ExpenseListScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Expenses');
-}
-
-class AddExpenseScreen extends StatelessWidget {
-  const AddExpenseScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Add Expense');
-}
-
-class EditExpenseScreen extends StatelessWidget {
-  final int expenseId;
-  const EditExpenseScreen({super.key, required this.expenseId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Edit Expense');
-}
-
-class ReminderListScreen extends StatelessWidget {
-  const ReminderListScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Reminders');
-}
-
-class AddReminderScreen extends StatelessWidget {
-  final int? customerId;
-  const AddReminderScreen({super.key, this.customerId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Add Reminder');
-}
-
-class EditReminderScreen extends StatelessWidget {
-  final int reminderId;
-  const EditReminderScreen({super.key, required this.reminderId});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Edit Reminder');
-}
-
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Settings');
-}
-
-class BackupRestoreScreen extends StatelessWidget {
-  const BackupRestoreScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Backup & Restore');
-}
-
-class ExportDataScreen extends StatelessWidget {
-  const ExportDataScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Export Data');
-}
-
-class BusinessProfileScreen extends StatelessWidget {
-  const BusinessProfileScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Business Profile');
-}
-
-class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'About');
-}
-
-class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Onboarding');
-}
-
-class SetupWizardScreen extends StatelessWidget {
-  const SetupWizardScreen({super.key});
-  @override
-  Widget build(BuildContext context) => _PlaceholderScreen(title: 'Setup');
-}
-
-// Generic placeholder screen
+// Generic placeholder screen for unimplemented screens
 class _PlaceholderScreen extends StatelessWidget {
   final String title;
   const _PlaceholderScreen({required this.title});
